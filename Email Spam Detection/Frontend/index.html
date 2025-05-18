@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Email Spam Checker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --danger: #f72585;
+            --success: #4cc9f0;
+            --warning: #f8961e;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            line-height: 1.6;
+            color: var(--dark);
+            background-color: #f5f7fa;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+        }
+        
+        h1 {
+            color: var(--primary);
+            text-align: center;
+            margin-bottom: 30px;
+            font-weight: 600;
+        }
+        
+        .description {
+            text-align: center;
+            color: var(--gray);
+            margin-bottom: 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--dark);
+        }
+        
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-family: inherit;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        input[type="text"]:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+        }
+        
+        textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+        
+        button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: background-color 0.3s, transform 0.2s;
+            display: block;
+            width: 100%;
+        }
+        
+        button:hover {
+            background-color: #3a56d4;
+            transform: translateY(-2px);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        #result {
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 5px;
+            display: none;
+        }
+        
+        .spam {
+            background-color: rgba(247, 37, 133, 0.1);
+            border-left: 4px solid var(--danger);
+        }
+        
+        .not-spam {
+            background-color: rgba(76, 201, 240, 0.1);
+            border-left: 4px solid var(--success);
+        }
+        
+        .result-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .result-icon {
+            font-size: 24px;
+            margin-right: 10px;
+        }
+        
+        .spam .result-icon {
+            color: var(--danger);
+        }
+        
+        .not-spam .result-icon {
+            color: var(--success);
+        }
+        
+        .result-title {
+            font-size: 20px;
+            font-weight: 600;
+        }
+        
+        .result-details {
+            margin-top: 15px;
+        }
+        
+        .detail-item {
+            margin-bottom: 10px;
+        }
+        
+        .detail-label {
+            font-weight: 500;
+            display: inline-block;
+            width: 120px;
+        }
+        
+        .progress-container {
+            width: 100%;
+            background-color: #e9ecef;
+            border-radius: 5px;
+            margin: 10px 0;
+            height: 10px;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            border-radius: 5px;
+            transition: width 0.5s ease;
+        }
+        
+        .low-risk {
+            background-color: var(--success);
+        }
+        
+        .medium-risk {
+            background-color: var(--warning);
+        }
+        
+        .high-risk {
+            background-color: var(--danger);
+        }
+        
+        .flags {
+            margin-top: 15px;
+        }
+        
+        .flag-item {
+            display: inline-block;
+            margin-right: 10px;
+            margin-bottom: 10px;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 14px;
+            background-color: #f1f1f1;
+        }
+        
+        .flag-active {
+            background-color: rgba(247, 37, 133, 0.2);
+            color: var(--danger);
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+            
+            .detail-label {
+                display: block;
+                width: auto;
+                margin-bottom: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Advanced Email Spam Checker</h1>
+        <p class="description">Analyze your email content to detect potential spam messages based on keywords, patterns, and other indicators.</p>
+        
+        <form id="emailForm">
+            <div class="form-group">
+                <label for="subject">Email Subject:</label>
+                <input type="text" name="subject" id="subject" placeholder="Enter email subject" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="body">Email Body:</label>
+                <textarea name="body" id="body" placeholder="Enter email body content" required></textarea>
+            </div>
+            
+            <button type="submit">Analyze for Spam</button>
+        </form>
+        
+        <div id="result"></div>
+    </div>
+
+    <script>
+        document.getElementById('emailForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const submitButton = this.querySelector('button');
+            const originalButtonText = submitButton.textContent;
+            
+            // Show loading state
+            submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Analyzing...';
+            submitButton.disabled = true;
+            
+            fetch('http://127.0.0.1:5000/check-spam', {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => {
+                if (!res.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return res.json();
+            })
+            .then(data => {
+                const resultDiv = document.getElementById('result');
+                resultDiv.style.display = 'block';
+                
+                // Determine risk level for progress bar
+                let riskClass = 'low-risk';
+                if (data.score > 0.4 && data.score <= 0.7) {
+                    riskClass = 'medium-risk';
+                } else if (data.score > 0.7) {
+                    riskClass = 'high-risk';
+                }
+                
+                // Create flags HTML
+                let flagsHTML = '';
+                if (data.flags.excessive_caps || data.flags.excessive_punct || data.flags.has_urls) {
+                    flagsHTML = '<div class="flags"><strong>Flags:</strong><br>';
+                    flagsHTML += `<span class="flag-item ${data.flags.excessive_caps ? 'flag-active' : ''}">Excessive Caps</span>`;
+                    flagsHTML += `<span class="flag-item ${data.flags.excessive_punct ? 'flag-active' : ''}">Excessive Punctuation</span>`;
+                    flagsHTML += `<span class="flag-item ${data.flags.has_urls ? 'flag-active' : ''}">Contains URLs</span>`;
+                    flagsHTML += '</div>';
+                }
+                
+                // Set result HTML
+                resultDiv.className = data.is_spam ? 'spam' : 'not-spam';
+                resultDiv.innerHTML = `
+                    <div class="result-header">
+                        <div class="result-icon">
+                            <i class="fas ${data.is_spam ? 'fa-exclamation-triangle' : 'fa-check-circle'}"></i>
+                        </div>
+                        <div class="result-title">
+                            ${data.is_spam ? 'This email is likely SPAM' : 'This email appears to be legitimate'}
+                        </div>
+                    </div>
+                    
+                    <div class="result-details">
+                        <div class="detail-item">
+                            <span class="detail-label">Spam Score:</span>
+                            ${data.score.toFixed(2)} / 1.0
+                        </div>
+                        <div class="progress-container">
+                            <div class="progress-bar ${riskClass}" style="width: ${data.score * 100}%"></div>
+                        </div>
+                        
+                        ${data.matched_keywords.length > 0 ? `
+                            <div class="detail-item">
+                                <span class="detail-label">Matched Keywords:</span>
+                                <ul style="margin-top: 5px; margin-left: 20px;">
+                                    ${data.matched_keywords.map(item => `<li>${item}</li>`).join('')}
+                                </ul>
+                            </div>
+                        ` : ''}
+                        
+                        ${flagsHTML}
+                    </div>
+                `;
+                
+                // Scroll to result
+                resultDiv.scrollIntoView({ behavior: 'smooth' });
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while analyzing the email. Please try again.');
+            })
+            .finally(() => {
+                submitButton.textContent = originalButtonText;
+                submitButton.disabled = false;
+            });
+        });
+    </script>
+</body>
+</html>
